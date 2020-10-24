@@ -1,5 +1,23 @@
 import java.util.Scanner;
 
+class DMath{
+	double squaredDist(double x1, double y1, double x2, double y2){
+		return ((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+	}
+	double min(double a, double b){
+		if(a<=b)
+			return a;
+		else
+			return b;
+	}
+	double abs(double x){
+		if(x>=0)
+			return x;
+		else
+			return -x;
+	}
+}
+
 class Square{
 	double x, y, l;
 	public Square(double x,double  y,double  l){
@@ -7,91 +25,97 @@ class Square{
 		this.y=y;
 		this.l=l;
 	}
-	void adjust(Circle cl){
-		while(l<cl.r*2){
-			
 
 	double area(){
 		return this.l*this.l;
 	}
-	int checkCorners(Circle cl){
-		boolean b[]=new boolean[4];
 
-		b[0]=cl.isInside(x+l,y+l);
-		b[1]=cl.isInside(x,y+l);
-	       	b[2]=cl.isInside(x+l,y);
-		b[3]=cl.isInside(x,y);
-		if(b[0] && b[1] && b[2] && b[3] )
-			return 1;
-		else if(!b[0] && !b[1] && !b[2] && !b[3] )
-			return -1;
-		else
-			return 0;
+	boolean isInCircle(Circle cl){
+		return (cl.isIn(x+l,y+l) && cl.isIn(x,y+l) && cl.isIn(x+l,y) && cl.isIn(x,y));
 	}
+
+	boolean isThisInSquare(Square sq){
+		return (sq.isIn(x+l,y+l) && sq.isIn(x,y+l) && sq.isIn(x+l,y) && sq.isIn(x,y));
+	}
+
 	void print(){
 		System.out.println("x= "+x+"\ty= "+y+"\tl= "+l);
 	}
+
+	boolean isIn(double x, double y){
+		return (x>=this.x && x<=this.x+l && y>=this.y && y<=this.y+l);
+	}
+
+	boolean isOut(Circle cl){
+		return (!cl.isIn(x+l, y+l) && !cl.isIn(x, y+l) && !cl.isIn(x+l, y) && !cl.isIn(x, y));
+	}
+
+	boolean boolIntersectSquare(Square sq){
+		return (sq.isIn(x+l, y+l) || sq.isIn(x, y+l) || sq.isIn(x+l, y) || sq.isIn(x, y) || sq.x==x || sq.y==y || sq.x+sq.l==x+l || sq.y+sq.l==y+l);
+	}
+
 }
+
 class Circle{
 	double x, y, r;
+	Square sq;
 	public Circle(double x,double  y,double  r){
 		this.x=x;
 		this.y=y;
 		this.r=r;
+		this.sq=new Square(x-r, y-r, 2*r);
 	}
-	boolean isInside(double x,double  y){
+	double area(){
+		return 3.14159*r*r;
+	}
+
+	boolean isIn(double x,double  y){
 		if(((x-this.x)*(x-this.x)+(y-this.y)*(y-this.y))<=r*r)
 			return true;
 		else
 			return false;
 	}
+
+	boolean isSquareOut(Square sq){
+		if(sq.isIn(x,y))
+			return false;
+		// System.out.println("testing isSquareOut");
+		if(sq.boolIntersectSquare(this.sq)){
+			// System.out.println("sq.intersectSq(this.sq)=TRUE");
+			return (!isIn(sq.x+sq.l, sq.y+sq.l) && !isIn(sq.x, sq.y+sq.l) && !isIn(sq.x+sq.l, sq.y) && !isIn(sq.x, sq.y));
+		}
+		return false;
+	}
+
+	boolean isInSquare(Square sq){
+		return this.sq.isThisInSquare(sq);
+	}
+
 	void print(){
 		System.out.println("x= "+x+"\ty= "+y+"\tr= "+r);
 	}
 }
 
 public class D06{
-	public static boolean isOut(Square sq, Circle cl);
-		/*
-		 * pra ver se o quadrado esta dentro do circulo é so ver se a circunf e a borda do quadrado se intersectam
-		 * pra isso vemos a eq da reta (no caso da lateral vertical x=", e horizontal y..)
-		 * e vemos tambem a equacao da cricunf ( (x+cx)^2 + (y+cy)^2 = r^2 )
-		 * resolvemos como sistema e temos a inetrseccao 
-		 */
-	public static boolean isSqInCl(Square sq, Circle cl);
-		/*
-		 * so ver se as 4 bordas do quad estao dentro da area do circ
-		 * aka. dist (bx, by) de r < r
-		 */
-	public static boolean isClInSq(Square sq, Circle cl);
-		 /*
-		  * primeiro ver se o centro esta dentro do quadrado 
-		  * aka. qx <= cx <= qx+l "eq. p cy
-		  * entao ver se cx-r >= qx ; cx+r >=qx+l "eq. p y
-		  */
 
-	public static double getArea(Square sq, Circle cl, double area){
-		System.out.print("looking in square: ");
-		sq.print();
-		int cIn=sq.checkCorners(cl);
-		System.out.println("cIn= "+cIn);
-		if(cIn==1){
-			System.out.println("returning "+area);
-			return (area+=sq.area());
-		} else if(cIn==-1){
-			System.out.println("returning "+area);
-			return area;
-		} else if(sq.l>=0.25){
-			area+=getArea(new Square(sq.x+sq.l,sq.y+sq.l,sq.l/2), cl, area);
-			area+=getArea(new Square(sq.x+sq.l,sq.y,sq.l/2), cl, area);
-			area+=getArea(new Square(sq.x,sq.y+sq.l,sq.l/2), cl, area);
-			area+=getArea(new Square(sq.x,sq.y,sq.l/2), cl, area);
-			System.out.println("returning "+area);
-			return area;
-		} else{ 
-			System.out.println("returning "+area);
-			return area;
-		}
+	public static double getArea(Square sq, Circle cl){
+		if(cl.isInSquare(sq))
+			return cl.area();
+		return intersect(sq, cl);
+	}
+
+	public static double intersect(Square sq, Circle cl){
+		if(cl.isSquareOut(sq))
+				return 0;
+		if(sq.isInCircle(cl))
+			return sq.area();
+		if(sq.area()<=0.025){
+			if(cl.isIn(sq.x+sq.l/2, sq.y+sq.l/2))
+				return sq.area();
+			else
+				return 0;
+			}
+		return (intersect(new Square(sq.x, sq.y, sq.l/2), cl)+intersect(new Square(sq.x+sq.l/2, sq.y, sq.l/2), cl)+intersect(new Square(sq.x, sq.y+sq.l/2, sq.l/2), cl)+intersect(new Square(sq.x+sq.l/2, sq.y+sq.l/2, sq.l/2), cl));
 	}
 	public static void main(String[] args){
 		Scanner in=new Scanner(System.in);
@@ -99,8 +123,7 @@ public class D06{
 		for(int n=0; n<N; n++){
 			Square sq=new Square(in.nextDouble(), in.nextDouble(), in.nextDouble());
 			Circle cl=new Circle(in.nextDouble(), in.nextDouble(), in.nextDouble());
-			sq.adjust(cl);
-			System.out.println(getArea(sq, cl, 0));
+			System.out.println(getArea(sq, cl));
 		}
 	}
 }
