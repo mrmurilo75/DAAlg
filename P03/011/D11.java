@@ -9,7 +9,7 @@ class D11{
 		return res;
 	}
 	static int doPartition(int K, int[] D){
-		System.out.print("\n\t[ ");
+		//System.out.print("\n\t[ ");
 		int i, minSum=0, maxSum=addArray(D);
 		while(minSum<maxSum){
 			if(partition(K-1, D, 0, (maxSum+minSum)/2))
@@ -20,11 +20,11 @@ class D11{
 		return maxSum;
 	}
 	static boolean partition(int K, int[] D, int start, int max){
-		System.out.print(start+", ");
+		//System.out.print(start+", ");
 		int i, res;
 		if(K==0){
 			for(i=start, res=0; i<D.length; res+=D[i++]);
-			System.out.println("]");
+			//System.out.println("]");
 			return ((res<=max)? true : false);
 		}
 		for(i=start, res=0; i<D.length && res+D[i]<=max; res+=D[i++]);
