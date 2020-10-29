@@ -28,8 +28,10 @@ class D11{
 			return ((res<=max)? true : false);
 		}
 		for(i=start, res=0; i<D.length && res+D[i]<=max; res+=D[i++]);
-		if(i==start && i<D.length)
-			return partition(K-1, D, i+1, D[i]);
+		if(i==start && i<D.length){
+			if(D[i]>max) return false;
+			return partition(K-1, D, i+1, max);
+		}
 		return partition(K-1, D, i, max);
 	}
 
