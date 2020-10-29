@@ -2,22 +2,33 @@ import java.util.Scanner;
 import java.util.Arrays;
 
 class D11{
-	static int doPartition(int K, int[] D){
-		int i, now, minSum=D[0], min=partition(K-1, D, 1, minSum);
-		for(i=1, minSum+=D[i]; (now=partition(K-1, D, i+1, minSum))<min; minSum+=D[++i], min=now)
-			System.out.print("\n\t[ ");
-		return min;
+	static int addArray(int[] A){
+		int res=0;
+		for(int i=0; i<A.length; i++)
+			res+=A[i];
+		return res;
 	}
-	static int partition(int K, int[] D, int start, int max){
+	static int doPartition(int K, int[] D){
+		System.out.print("\n\t[ ");
+		int i, minSum=0, maxSum=addArray(D);
+		while(minSum<maxSum){
+			if(partition(K-1, D, 0, (maxSum+minSum)/2))
+				maxSum=(maxSum+minSum)/2;
+			else
+				minSum=(maxSum+minSum)/2+1;
+		}
+		return maxSum;
+	}
+	static boolean partition(int K, int[] D, int start, int max){
 		System.out.print(start+", ");
 		int i, res;
-		if(K<=0){
+		if(K==0){
 			for(i=start, res=0; i<D.length; res+=D[i++]);
 			System.out.println("]");
-			return ((res>max)? res : max);
+			return ((res<=max)? true : false);
 		}
 		for(i=start, res=0; i<D.length && res+D[i]<=max; res+=D[i++]);
-		if(i==start)
+		if(i==start && i<D.length)
 			return partition(K-1, D, i+1, D[i]);
 		return partition(K-1, D, i, max);
 	}
