@@ -37,29 +37,21 @@ class D13{
 		int N=in.nextInt();
 		Segment[] S=new Segment[N];
 		for(int i=0; i<N; i++){
-			int L, R;
-			if((L=in.nextInt())>=M){
-				in.nextInt();
-				continue;
-			}
-			if((R=in.nextInt())>=M){
-				S[i]=new Segment(L, M);
-				continue;
-			}
+			int L=in.nextInt(), R=in.nextInt();
 			S[i]=new Segment(L, R);
 		}
 		Arrays.sort(S);
 //		System.out.println(Arrays.toString(S));
 		int count=1;
 		Segment now=S[0];
-		for(int i=1; i<N && now.end<M; i++){
-			if(S[i].start>=now.end){
-				if(S[i].start==now.end)
-					now=S[i];
-				else
-					now=S[--i];
-				count++;
-			}
+//		System.out.println(now);
+		for(int i=1, best, j; i<N && now.end<M; i=j, i++){
+			for(j=i+2, best=i+1; j<N && S[j].start<=now.end; j++)
+				if(S[j].end>S[best].end)
+					best=j;
+			now=S[best];
+//			System.out.println(now);
+			count++;
 		}
 		System.out.println(count);
 		
