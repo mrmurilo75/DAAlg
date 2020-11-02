@@ -45,8 +45,8 @@ class D13{
 		int count=1;
 		Segment now=S[0];
 //		System.out.println(now);
-		for(int i=1, best, j; i<N && now.end<M; i=j, i++){
-			for(j=i+2, best=i+1; j<N && S[j].start<=now.end; j++)
+		for(int i=0, best, j; i<N && now.end<M; i=j){
+			for(j=i, best=i; j<N && S[j].start<=now.end; j++)
 				if(S[j].end>S[best].end)
 					best=j;
 			now=S[best];
