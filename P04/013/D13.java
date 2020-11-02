@@ -1,5 +1,5 @@
 import java.util.Scanner;
-import java.util.TreeSet;
+import java.util.Arrays;
 
 class Segment implements Comparable<Segment>{
 	int start, end;
@@ -17,15 +17,16 @@ class Segment implements Comparable<Segment>{
 	}
 	public int compareTo(Segment that){
 		if(this.start==that.start){
-			if(this.size()==that.size())
+			if(this.end==that.end)
 				return 0;
-			if(this.size()<that.size())
+			if(this.end>that.end)
 				return -1;
 			return 1;
 		}
-		if(this.start<that.start)
-			return -1;
-		return 1;
+		return (this.start<that.start)? -1 : 1;
+	}
+	public String toString(){
+		return "("+start+", "+end+")"; 
 	}
 }
 
@@ -34,7 +35,7 @@ class D13{
 		Scanner in=new Scanner(System.in);
 		int M =in.nextInt();
 		int N=in.nextInt();
-		TreeSet<Segment> S=new TreeSet<Segment>();
+		Segment[] S=new Segment[N];
 		for(int i=0; i<N; i++){
 			int L, R;
 			if((L=in.nextInt())>=M){
@@ -42,14 +43,26 @@ class D13{
 				continue;
 			}
 			if((R=in.nextInt())>=M){
-				S.add(new Segment(L, M));
+				S[i]=new Segment(L, M);
 				continue;
 			}
-			S.add(new Segment(L, R));
+			S[i]=new Segment(L, R);
 		}
-
-
-		System.out.println(S.size());
+		Arrays.sort(S);
+//		System.out.println(Arrays.toString(S));
+		int count=1;
+		Segment now=S[0];
+		for(int i=1; i<N && now.end<M; i++){
+			if(S[i].start>=now.end){
+				if(S[i].start==now.end)
+					now=S[i];
+				else
+					now=S[--i];
+				count++;
+			}
+		}
+		System.out.println(count);
+		
 	}
 }
 
