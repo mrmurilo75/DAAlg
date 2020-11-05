@@ -25,21 +25,21 @@ class IntPair implements Comparable<IntPair>{
 
 
 class D17{
-        static void printPyr(Integer[][] pyr, int pSize){
+        static void printPyr(Long[][] pyr, int pSize){
                 for(int i=0; i<pSize; i++)
                         System.out.println(Arrays.toString(pyr[i]));
         }
 
-        static int getWays(Integer[][] pyr, int pSize, int nowLine, int nowRow, TreeSet<IntPair> D){
+        static long getWays(Long[][] pyr, int pSize, int nowLine, int nowRow, TreeSet<IntPair> D){
                 if(D.contains(new IntPair(nowLine, nowRow))){
-                                pyr[nowLine][nowRow]=0;
+                                pyr[nowLine][nowRow]=(long)0;
 //                                printPyr(pyr,pSize);
                                 return 0;
                 }
                 if(pyr[nowLine][nowRow]==null){
-                        int res=0;
+                        long res=0;
                         if(nowLine==pSize-1){
-                                pyr[nowLine][nowRow]=1;
+                                pyr[nowLine][nowRow]=(long)1;
                                 return 1;
                         }
                         res+=(pyr[nowLine+1][nowRow]=getWays(pyr, pSize, nowLine+1, nowRow, D));
@@ -60,7 +60,7 @@ class D17{
                         D.add(new IntPair(N-in.nextInt(), in.nextInt()-1));
                         //D[i]=new IntPair(in.nextInt(), in.nextInt());
                 //Arrays.sort(D);
-                Integer[][] pyramid=new Integer[N][N];
+                Long[][] pyramid=new Long[N][N];
                 System.out.println(getWays(pyramid,N,0,0,D));
 //                for(int i=0; i<N; i++)
 //                        System.out.println(Arrays.toString(pyramid[i]));
