@@ -35,10 +35,10 @@ class D18{
 			petty[i]=i;
 	}
 	static void fillUsed(int total){
-		fillPetty(count.length);
-		System.out.println("\t"+Arrays.toString(petty));
-		System.out.println("count=\t"+Arrays.toString(count));
-		System.out.println("use=\t"+Arrays.toString(use));
+//		fillPetty(count.length);
+//		System.out.println("\t"+Arrays.toString(petty));
+//		System.out.println("count=\t"+Arrays.toString(count));
+//		System.out.println("use=\t"+Arrays.toString(use));
 		used=new Integer[count[total]];
 		for(int i=0; i<used.length; i++){
 			used[i]=use[total];
