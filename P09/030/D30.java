@@ -1,10 +1,9 @@
 import java.util.Scanner;
 import java.util.LinkedList;
+import java.util.Queue;
 
 class Node {
 	public LinkedList<Integer> adj;
-	public boolean visited;
-	public int distance;
 
 	Node() {
 		adj = new LinkedList<Integer>();
@@ -12,40 +11,42 @@ class Node {
 }
 
 class Graph {
-	int n;
+	int size;
 	Node nodes[];
 
 	Graph(int n){
-		this.n = n;
-		nodes  = new Node[n];
-		for (int i=0; i<n; i++)
-			nodes[i] = new Node();
+		this.size = n;
+		nodes  = new Node[size]; //each nodes[i] non-initialized is null
 	}
 
 	public void addLink(int a, int b){
+		if(nodes[a]==null)
+			nodes[a]=new Node();
+		if(nodes[b]==null)
+			nodes[b]=new Node();
 		nodes[a].adj.add(b);
 		nodes[b].adj.add(a);
 	}
 
-	public void bfs(int v) {
-		LinkedList<Integer> q = new LinkedList<Integer>();
-		for (int i=0; i<n; i++)
-			nodes[i].visited = false;
+	public int[] distancesBFS(int base) {
+		int[] distance=new int[size];
+		boolean[] visited=new boolean[size];
+		Queue<Integer> q = new LinkedList<Integer>();
 
-		q.add(v);
-		nodes[v].visited = true;
-		nodes[v].distance = 0;
+		q.add(base);
+		visited[base] = true;
+		distance[base] = 0;
 
 		while (q.size() > 0) {
-			int u = q.removeFirst();
-			System.out.println((u+1)+" [dist="+nodes[u].distance+"]");
+			int u = q.remove();
 			for (int w : nodes[u].adj)
-			if (!nodes[w].visited) {
+			if (!visited[w]) {
 				q.add(w);
-				nodes[w].visited  = true;
-				nodes[w].distance = nodes[u].distance + 1;
+				visited[w]  = true;
+				distance[w] = distance[u] + 1;
 			}
 		}
+		return distance;
 	}
 }
 
@@ -56,6 +57,6 @@ public class D30 {
 		int   e = in.nextInt();
 		for (int i=0; i<e; i++)
 			g.addLink(in.nextInt()-1, in.nextInt()-1);
-		g.bfs(2);
+		g.distancesBFS(0);
 	}
 }
