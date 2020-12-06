@@ -1,0 +1,1042 @@
+public class D05{
+	public static void main(String[] args){
+		FastScanner in = new FastScanner(System.in);
+		int N = in.nextInt();
+		int E[] = new int[N]; 
+		for(int i=0; i<N; i++)
+			E[i] = in.nextInt();
+		int F = in.nextInt();
+		int A[] = new int[F]; 
+		int B[] = new int[F]; 
+		for(int i=0; i<F; i++){
+			A[i]=in.nextInt();
+			B[i]=in.nextInt();
+		}
+		for(int i=1; i<N; i++)
+			E[i]+=E[i-1];
+		for(int i=0; i<F; i++)
+			if(A[i]==1)
+				FastPrint.out.println(E[B[i]-1]);
+			else
+				FastPrint.out.println(E[B[i]-1]-E[A[i]-2]);
+		FastPrint.out.close();
+	}
+}
+import java.util.Scanner;
+
+class DMath{
+	double squaredDist(double x1, double y1, double x2, double y2){
+		return ((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+	}
+	double min(double a, double b){
+		if(a<=b)
+			return a;
+		else
+			return b;
+	}
+	double abs(double x){
+		if(x>=0)
+			return x;
+		else
+			return -x;
+	}
+}
+
+class Square{
+	double x, y, l;
+	public Square(double x,double  y,double  l){
+		this.x=x;
+		this.y=y;
+		this.l=l;
+	}
+
+	double area(){
+		return this.l*this.l;
+	}
+
+	boolean isInCircle(Circle cl){
+		return (cl.isIn(x+l,y+l) && cl.isIn(x,y+l) && cl.isIn(x+l,y) && cl.isIn(x,y));
+	}
+
+	boolean isThisInSquare(Square sq){
+		return (sq.isIn(x+l,y+l) && sq.isIn(x,y+l) && sq.isIn(x+l,y) && sq.isIn(x,y));
+	}
+
+	void print(){
+		System.out.println("x= "+x+"\ty= "+y+"\tl= "+l);
+	}
+
+	boolean isIn(double x, double y){
+		return (x>=this.x && x<=this.x+l && y>=this.y && y<=this.y+l);
+	}
+
+	boolean isOut(Circle cl){
+		return (!cl.isIn(x+l, y+l) && !cl.isIn(x, y+l) && !cl.isIn(x+l, y) && !cl.isIn(x, y));
+	}
+
+	boolean boolIntersectSquare(Square sq){
+		return (sq.isIn(x+l, y+l) || sq.isIn(x, y+l) || sq.isIn(x+l, y) || sq.isIn(x, y) || sq.x==x || sq.y==y || sq.x+sq.l==x+l || sq.y+sq.l==y+l);
+	}
+
+}
+
+class Circle{
+	double x, y, r;
+	Square sq;
+	public Circle(double x,double  y,double  r){
+		this.x=x;
+		this.y=y;
+		this.r=r;
+		this.sq=new Square(x-r, y-r, 2*r);
+	}
+	double area(){
+		return 3.14159*r*r;
+	}
+
+	boolean isIn(double x,double  y){
+		if(((x-this.x)*(x-this.x)+(y-this.y)*(y-this.y))<=r*r)
+			return true;
+		else
+			return false;
+	}
+
+	boolean isSquareOut(Square sq){
+		if(sq.isIn(x,y))
+			return false;
+		// System.out.println("testing isSquareOut");
+		if(sq.boolIntersectSquare(this.sq)){
+			// System.out.println("sq.intersectSq(this.sq)=TRUE");
+			return (!isIn(sq.x+sq.l, sq.y+sq.l) && !isIn(sq.x, sq.y+sq.l) && !isIn(sq.x+sq.l, sq.y) && !isIn(sq.x, sq.y));
+		}
+		return false;
+	}
+
+	boolean isInSquare(Square sq){
+		return this.sq.isThisInSquare(sq);
+	}
+
+	void print(){
+		System.out.println("x= "+x+"\ty= "+y+"\tr= "+r);
+	}
+}
+
+public class D06{
+
+	public static double getArea(Square sq, Circle cl){
+		if(cl.isInSquare(sq))
+			return cl.area();
+		return intersect(sq, cl);
+	}
+
+	public static double intersect(Square sq, Circle cl){
+		if(cl.isSquareOut(sq))
+				return 0;
+		if(sq.isInCircle(cl))
+			return sq.area();
+		if(sq.area()<=0.025){
+			if(cl.isIn(sq.x+sq.l/2, sq.y+sq.l/2))
+				return sq.area();
+			else
+				return 0;
+			}
+		return (intersect(new Square(sq.x, sq.y, sq.l/2), cl)+intersect(new Square(sq.x+sq.l/2, sq.y, sq.l/2), cl)+intersect(new Square(sq.x, sq.y+sq.l/2, sq.l/2), cl)+intersect(new Square(sq.x+sq.l/2, sq.y+sq.l/2, sq.l/2), cl));
+	}
+	public static void main(String[] args){
+		Scanner in=new Scanner(System.in);
+		int N=in.nextInt();
+		for(int n=0; n<N; n++){
+			Square sq=new Square(in.nextDouble(), in.nextDouble(), in.nextDouble());
+			Circle cl=new Circle(in.nextDouble(), in.nextDouble(), in.nextDouble());
+			System.out.println(getArea(sq, cl));
+		}
+	}
+}
+import java.util.Scanner;
+import java.util.Arrays;
+
+class Letter implements Comparable<Letter>{
+	int a;
+	int count;
+	int pos;
+	Letter(int A){
+		a=A;
+		count=0;
+		pos=-1;
+	}
+	public int compareTo(Letter that){
+		if(that.count<this.count)
+			return -1;
+		if(that.count>this.count)
+			return 1;
+		if(that.pos>this.pos)
+			return -1;
+		if(that.pos<this.pos)
+			return 1;
+		return 0;
+	}
+	public String toString(){
+		return Character.valueOf((char) a)+" "+count;
+	}
+}
+
+
+class D09{
+	public static void main(String[] args){
+		Scanner in=new Scanner(System.in);
+		String ADN=in.next();
+		Letter[] arr=new Letter[26];
+		for(int i=0; i<26; i++)
+			arr[i]=new Letter(i+'A');
+		for(int i=0; i<ADN.length(); i++){
+			if(arr[ADN.charAt(i)-'A'].pos<0)
+				arr[ADN.charAt(i)-'A'].pos=i;
+			arr[ADN.charAt(i)-'A'].count++;
+		}
+		Arrays.sort(arr);
+		for(int i=0; i<26; i++)
+			if(arr[i].count>0)
+				System.out.println(arr[i]);
+	}
+}
+import java.util.Scanner;
+import java.util.TreeSet;
+
+class D10{
+	public static void main(String[] args){
+		Scanner in=new Scanner(System.in);
+		int N=in.nextInt();
+		int[] S=new int[N];
+		for(int i=0; i<N; i++)
+			S[i]=in.nextInt();
+		int Q=in.nextInt();
+		int[] P=new int[Q];
+		for(int i=0; i<Q; i++)
+			P[i]=in.nextInt();
+		TreeSet<Integer> tree=new TreeSet<Integer>();
+		for(int i=0; i<N-1; i++)
+			for(int j=i+1; j<N; j++)
+				tree.add(S[i]+S[j]);
+		for(int i=0; i<Q; i++){
+			Integer top, floor;
+			if((top=tree.ceiling(P[i]))!=null && top!=P[i] && (floor=tree.floor(P[i]))!=null){
+				if((P[i]-floor)==(top-P[i]))
+					System.out.println(floor+" "+top);
+				else
+					System.out.println((P[i]-floor<top-P[i])? floor : top);
+			} else
+				System.out.println( (top==null)? tree.floor(P[i]) : top );
+		}
+	}
+}
+
+import java.util.Scanner;
+import java.util.Arrays;
+
+class D11{
+	static int addArray(int[] A){
+		int res=0;
+		for(int i=0; i<A.length; i++)
+			res+=A[i];
+		return res;
+	}
+	static int doPartition(int K, int[] D){
+		//System.out.print("\n\t[ ");
+		int i, minSum=0, maxSum=addArray(D);
+		while(minSum<maxSum){
+			if(partition(K-1, D, 0, (maxSum+minSum)/2))
+				maxSum=(maxSum+minSum)/2;
+			else
+				minSum=(maxSum+minSum)/2+1;
+		}
+		return maxSum;
+	}
+	static boolean partition(int K, int[] D, int start, int max){
+		//System.out.print(start+", ");
+		int i, res;
+		if(K==0){
+			for(i=start, res=0; i<D.length; res+=D[i++]);
+			//System.out.println("]");
+			return ((res<=max)? true : false);
+		}
+		for(i=start, res=0; i<D.length && res+D[i]<=max; res+=D[i++]);
+		if(i==start && i<D.length){
+			if(D[i]>max) return false;
+			return partition(K-1, D, i+1, max);
+		}
+		return partition(K-1, D, i, max);
+	}
+
+	public static void main(String[] args){
+		Scanner in=new Scanner(System.in);
+		int N=in.nextInt();
+		int[] D=new int[N];
+		for(int i=0; i<N; i++)
+			D[i]=in.nextInt();
+		int P=in.nextInt();
+		int[] K=new int[P];
+		//System.out.println("\t"+Arrays.toString(D));
+		for(int i=0; i<P; i++)
+			K[i]=doPartition(in.nextInt(), D);
+		//System.out.println("\t"+Arrays.toString(K));
+		for(int i=0; i<P; i++)
+			System.out.println(K[i]);
+
+	}
+}
+import java.util.Scanner;
+import java.util.Arrays;
+
+class Segment implements Comparable<Segment>{
+	int start, end;
+	Segment(int start, int end){
+		this.start=start;
+		this.end=end;
+	}
+	int size(){
+		return end-start;
+	}
+	boolean isIn(Segment that){
+		if(that.start>=this.start && that.end<=this.end)
+			return true;
+		return false;
+	}
+	public int compareTo(Segment that){
+		if(this.start==that.start){
+			if(this.end==that.end)
+				return 0;
+			if(this.end>that.end)
+				return -1;
+			return 1;
+		}
+		return (this.start<that.start)? -1 : 1;
+	}
+	public String toString(){
+		return "("+start+", "+end+")"; 
+	}
+}
+
+class D13{
+	public static void main(String[] args){
+		Scanner in=new Scanner(System.in);
+		int M =in.nextInt();
+		int N=in.nextInt();
+		Segment[] S=new Segment[N];
+		for(int i=0; i<N; i++){
+			int L=in.nextInt(), R=in.nextInt();
+			S[i]=new Segment(L, R);
+		}
+		Arrays.sort(S);
+//		System.out.println(Arrays.toString(S));
+		int count=1;
+		Segment now=S[0];
+//		System.out.println(now);
+		for(int i=0, best, j; i<N && now.end<M; i=j){
+			for(j=i, best=i; j<N && S[j].start<=now.end; j++)
+				if(S[j].end>S[best].end)
+					best=j;
+			now=S[best];
+//			System.out.println(now);
+			count++;
+		}
+		System.out.println(count);
+		
+	}
+}
+
+import java.util.Scanner;
+import java.util.Arrays;
+import java.util.TreeSet;
+
+class IntPair implements Comparable<IntPair>{
+        int line, row;
+        IntPair(int line, int row){
+                this.line=line;
+                this.row=row;
+        }
+        public int compareTo(IntPair that){
+                if(this.line<that.line)
+                        return -1; 
+                if(this.line>that.line)
+                        return 1;
+                if(this.line==that.line){
+                        if(this.row<that.row)
+                                return -1; 
+                        if(this.row>that.row)
+                                return 1;
+                }
+                return 0;
+        }
+}
+
+
+class D17{
+        static void printPyr(Long[][] pyr, int pSize){
+                for(int i=0; i<pSize; i++)
+                        System.out.println(Arrays.toString(pyr[i]));
+        }
+
+        static long getWays(Long[][] pyr, int pSize, int nowLine, int nowRow, TreeSet<IntPair> D){
+                if(D.contains(new IntPair(nowLine, nowRow))){
+                                pyr[nowLine][nowRow]=(long)0;
+//                                printPyr(pyr,pSize);
+                                return 0;
+                }
+                if(pyr[nowLine][nowRow]==null){
+                        long res=0;
+                        if(nowLine==pSize-1){
+                                pyr[nowLine][nowRow]=(long)1;
+                                return 1;
+                        }
+                        res+=(pyr[nowLine+1][nowRow]=getWays(pyr, pSize, nowLine+1, nowRow, D));
+                        res+=(pyr[nowLine+1][nowRow+1]=getWays(pyr, pSize, nowLine+1, nowRow+1, D));
+                        pyr[nowLine][nowRow]=res;
+//                        printPyr(pyr,pSize);
+                        return res;
+                }
+                return pyr[nowLine][nowRow];
+        }
+        public static void main(String[] args){
+                Scanner in=new Scanner(System.in);
+                int N=in.nextInt();
+                int d=in.nextInt();
+                //IntPair[] D=new IntPair[d];
+                TreeSet<IntPair> D=new TreeSet<IntPair>();
+                for(int i=0; i<d; i++)
+                        D.add(new IntPair(N-in.nextInt(), in.nextInt()-1));
+                        //D[i]=new IntPair(in.nextInt(), in.nextInt());
+                //Arrays.sort(D);
+                Long[][] pyramid=new Long[N][N];
+                System.out.println(getWays(pyramid,N,0,0,D));
+//                for(int i=0; i<N; i++)
+//                        System.out.println(Arrays.toString(pyramid[i]));
+
+        }
+}
+
+import java.util.Scanner;
+import java.util.Arrays;
+
+class D18{
+	static int[] petty;
+	static Integer[] coins;
+	static Integer[] count;
+	static Integer[] use;
+	static Integer[] used;
+	static int minCount(int[] possib, int total){
+		int min=0;
+		for(int i=1; i<coins.length; i++)
+			if(possib[i]<possib[min])
+				min=i;
+		use[total]=coins[min];
+		return possib[min];
+	}
+	static int getCoins(int total){
+		if(total<0)
+			return 10001;
+		if(total==0)
+			return 0;
+		if(count[total]==null){
+			int[] possib=new int[coins.length];
+			for(int i=0; i<coins.length; i++)
+				possib[i]=getCoins(total-coins[i]);
+
+			count[total]=1+minCount(possib, total);
+		}
+		return count[total];
+	}
+	static void fillPetty(int total){
+		petty=new int[total];
+		for(int i=0; i<total; i++)
+			petty[i]=i;
+	}
+	static void fillUsed(int total){
+//		fillPetty(count.length);
+//		System.out.println("\t"+Arrays.toString(petty));
+//		System.out.println("count=\t"+Arrays.toString(count));
+//		System.out.println("use=\t"+Arrays.toString(use));
+		used=new Integer[count[total]];
+		for(int i=0; i<used.length; i++){
+			used[i]=use[total];
+			total-=use[total];
+		}
+		Arrays.sort(used);
+	}
+	static void printChange(int Q){
+		System.out.print(Q+": ["+used.length+"]");
+		for(int i=0; i<used.length; i++)
+			System.out.print(" "+used[i]);
+		System.out.println();
+	}
+	public static void main(String[] args){
+		Scanner in=new Scanner(System.in);
+		int N=in.nextInt();
+		coins=new Integer[N];
+		for(int i=0; i<N; i++)
+			coins[i]=in.nextInt();
+		int P=in.nextInt();
+		while((--P)>=0){
+			int Q=in.nextInt();
+			count=new Integer[Q+1];
+			use=new Integer[Q+1];
+			getCoins(Q);
+			fillUsed(Q);
+			printChange(Q);
+		}
+	}
+}
+import java.util.TreeMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
+
+class D21{
+	public static void main(String[] args){
+		FastScanner in=new FastScanner(System.in);
+		int A=in.nextInt();
+		int R=in.nextInt();
+		TreeMap<Integer,Integer> tree=new TreeMap<>();
+		for(int i=0; i<A+R; i++){
+			Map.Entry<Integer,Integer> kv;
+			Integer amount, pow;
+			String now=in.next();
+			if(now.equals("MIN")){
+				kv=new AbstractMap.SimpleEntry<Integer,Integer>(tree.pollFirstEntry());
+				System.out.println(pow=kv.getKey());
+				if((amount=kv.getValue())>1)
+					tree.put(pow, amount-1);
+			} else if(now.equals("MAX")){
+				kv=new AbstractMap.SimpleEntry<Integer,Integer>(tree.pollLastEntry());
+				System.out.println(pow=kv.getKey());
+				if((amount=kv.getValue())>1)
+					tree.put(pow, amount-1);
+			} else if(now.equals("BAK")){
+				pow=in.nextInt();
+				if((amount=tree.get(pow))==null){
+					amount=Integer.valueOf(0);
+					//System.out.println(pow);
+				}
+				tree.put(pow, amount+1);
+			}
+
+		}
+	}
+}
+// FastScanner
+// Pedro Ribeiro (DCC/FCUP)
+
+import java.io.*;
+import java.util.StringTokenizer;
+
+class FastScanner {
+    BufferedReader br;
+    StringTokenizer st;
+ 
+    public FastScanner(InputStream stream) {
+	br = new BufferedReader(new InputStreamReader(stream));
+    }
+ 
+    String next() {
+	while (st == null || !st.hasMoreElements()) {
+	    try {
+		st = new StringTokenizer(br.readLine());
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
+	}
+	return st.nextToken();
+    }
+ 
+    int nextInt() {
+	return Integer.parseInt(next());
+    }
+ 
+    long nextLong() {
+	return Long.parseLong(next());
+    }
+ 
+    double nextDouble() {
+	return Double.parseDouble(next());
+    }
+ 
+    String nextLine(){
+	String str = "";
+	try {
+	    str = br.readLine();
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
+	return str;
+    }
+
+}
+import java.util.Scanner;
+
+class Node{
+	boolean isBlack, isNull;
+	int value, blackCount, max=Integer.MAX_VALUE, min=Integer.MIN_VALUE;
+	Node left, right;
+
+	Node(int v){
+		isNull=(v==0);
+		isBlack=(v>=0);
+		value=Math.abs(v);
+	}
+
+	void initializeBST(){
+		if(this.isNull)
+			return;
+		this.max=this.value;
+		this.min=this.value;
+	}
+
+	boolean followsBSTProperty(){
+		if(this.isNull)
+			return true;
+		if(!this.left.isNull){
+			this.left.max=this.value;
+			this.left.min=this.min;
+		}
+		if(!this.right.isNull){
+			this.right.max=this.max;
+			this.right.min=this.value;
+		}
+			if(!(right.value>=right.min && right.value<=right.max) || !(left.value<=left.max && left.value>=left.min))
+				return false;
+		return true;
+	}
+
+	boolean followsRedProperty(){
+		if(isBlack)
+			return true;
+		if(this.left.isBlack && this.right.isBlack)
+			return true;
+		return false;
+	}
+
+}
+
+public class D22{
+
+	static Node readPreOrder(Scanner in){
+		int v=in.nextInt();
+		Node aux=new Node(v);
+		if(v!=0){
+			aux.left=readPreOrder(in);
+			aux.right=readPreOrder(in);
+		}
+		return aux;
+	}
+
+	static int maximum(Node t){
+		if(t.isNull)
+			return Integer.MIN_VALUE;
+		int minLeft=maximum(t.left);
+		int minRight=maximum(t.right);
+		return Math.max(t.value, Math.max(minLeft, minRight));
+	}
+
+	static int size(Node t){
+		if(t.isNull)
+			return 0;
+		return 1 + size(t.left) + size(t.right);
+	}
+
+	static boolean hasAllProperties(Node root){
+		root.blackCount=1;
+		//root.initializeBST();
+		return (countBlacks(root, 1)>0);
+	}
+	static int countBlacks(Node node, int parentBlackCount){
+		//System.out.print(node.value);
+		if(node.isNull)
+			return parentBlackCount+1;
+		if(!node.followsBSTProperty())
+			return 0;
+		//System.out.print("\tBST true");
+		node.blackCount=parentBlackCount;
+		if(node.isBlack)
+			node.blackCount++;
+		if(!node.followsRedProperty())
+			return 0;
+		//System.out.print("\tRedP true");
+		//System.out.println();
+		int leftC, rightC;
+		return ( ((leftC=countBlacks(node.left, node.blackCount))==0 || (rightC=countBlacks(node.right, node.blackCount))==0 || leftC!=rightC)? 0 : leftC );
+	}
+
+	public static void main(String args[]){
+		Scanner in=new Scanner(System.in);
+		int n= in.nextInt();
+		for(int i=0; i<n; i++){
+			Node root=readPreOrder(in);
+			if(root.isBlack && hasAllProperties(root))
+				System.out.println("SIM");
+			else
+				System.out.println("NAO");
+			//System.out.printf("Tree with %d nodes(min=%d, max=%d)\n", size(root), minimum(root), maximum(root));
+		}
+	}
+}
+// Codigo inicial para o problema [DAA 022] Arvores Red-Black
+// Pedro Ribeiro (DCC/FCUP)
+
+import java.util.Scanner;
+
+// Estrutura para representar um no da arvore
+class Node {
+    boolean isBlack;  // No preto?
+    boolean isNull;   // No nulo?
+    int value;        // Valor
+    Node left, right; // Filhos
+
+    Node(int v) {
+	isNull  = (v==0);
+	isBlack = (v>=0);
+	value   = Math.abs(v);
+    }
+}
+
+public class daa022 {
+
+    // Ler input em preorder
+    static Node readPreOrder(Scanner in) {
+	int v = in.nextInt();
+	Node aux = new Node(v);
+	if (v!=0) {
+	    aux.left  = readPreOrder(in);
+	    aux.right = readPreOrder(in);
+	}
+	return aux;
+    }
+
+    // Menor valor da arvore
+    static int minimum(Node t) {
+	if (t.isNull) return Integer.MAX_VALUE;
+	int minLeft  = minimum(t.left);
+	int minRight = minimum(t.right);
+	return Math.min(t.value, Math.min(minLeft, minRight));
+    }
+
+    // Maior valor da arvore
+    static int maximum(Node t) {
+	if (t.isNull) return Integer.MIN_VALUE;
+	int minLeft  = maximum(t.left);
+	int minRight = maximum(t.right);
+	return Math.max(t.value, Math.max(minLeft, minRight));
+    }
+
+    // Quantidade de nos (internos)
+    static int size(Node t) {
+	if (t.isNull) return 0;
+	return 1 + size(t.left) + size(t.right);
+    }
+
+    // ---------------------------------------------------
+    
+    public static void main(String args[]) {
+	Scanner in = new Scanner(System.in);
+	
+	int n =  in.nextInt();
+	for (int i=0; i<n; i++) {
+	    Node root = readPreOrder(in);
+	    System.out.printf("Tree with %d nodes (min=%d, max=%d)\n", size(root), minimum(root), maximum(root));
+	}	
+    }
+}
+import java.util.*;
+import java.io.*;
+
+public class D25{
+	static int n;
+	static boolean adj[][];
+	static boolean visited[];
+
+	static void dfs(int v) {
+		//System.out.print(v+1 + " ");
+		visited[v] = true;
+		for (int i=0; i<n; i++)
+			if (adj[v][i] && !visited[i])
+				dfs(i);
+	}
+
+	public static void main(String args[]) {
+		Scanner stdin = new Scanner(System.in);
+		n = stdin.nextInt();
+		adj = new boolean[n][n];
+		visited = new boolean[n];
+		int edges = stdin.nextInt();
+		for (int i=0; i<edges; i++) {
+			int a = stdin.nextInt();
+			int b = stdin.nextInt();
+			adj[a-1][b-1] = adj[b-1][a-1] = true;
+		}
+
+		int counter=0;
+		for(int i=0; i<n; i++)
+			if(!visited[i]){
+				counter++;
+				dfs(i);
+			}
+		System.out.println(counter);
+	}
+}
+// Exemplo de pesquisa em profundidade (DFS) num grafo nao dirigido
+
+import java.util.*;
+import java.io.*;
+
+public class DFS {
+    static int n;              // Numero de nos do grafo
+    static boolean adj[][];    // Matriz de adjacencias
+    static boolean visited[];  // Que nos ja foram visitados?
+
+    static void dfs(int v) {
+	System.out.print(v + " ");
+	visited[v] = true;
+	for (int i=1; i<=n; i++)
+	    if (adj[v][i] && !visited[i])
+		dfs(i);
+    }
+    
+    public static void main(String args[]) {
+	Scanner stdin = new Scanner(System.in);
+	
+	n = stdin.nextInt();
+	adj     = new boolean[n+1][n+1];
+	visited = new boolean[n+1];	
+	int edges = stdin.nextInt();	
+	for (int i=0; i<edges; i++) {
+	    int a = stdin.nextInt();
+	    int b = stdin.nextInt();
+	    adj[a][b] = adj[b][a] = true;
+	}
+
+	dfs(1); // Pesquisa em profundidade a partir do no 1
+	System.out.println();       
+    }
+}
+import java.util.Scanner;
+
+public class D26{
+	static boolean[][][] cels;
+	static int L, C;
+	static final int visited=1;
+
+	static int getBlobSize(int l, int c){
+		if(c>=0 && c<C && l>=0 && l<L && !cels[visited][l][c]){
+			cels[visited][l][c]=true;
+			if(cels[0][l][c])
+				return 1+getBlobSize(l+1, c)+getBlobSize(l+1, c+1)+getBlobSize(l+1, c-1)+getBlobSize(l-1, c)+getBlobSize(l-1, c+1)+getBlobSize(l-1, c-1)+getBlobSize(l, c+1)+getBlobSize(l, c-1);
+		}
+		return 0;
+	}
+
+	public static void main(String[] args){
+		Scanner in= new Scanner(System.in);
+		int N=in.nextInt();
+		for(int n=0; n<N; n++){
+			L=in.nextInt();
+			C=in.nextInt();
+			cels=new boolean[2][L][C];
+			for(int l=0; l<L; l++){
+				String line=in.next();
+				for(int c=0; c<C; c++){
+					if(Character.compare(line.charAt(c), '.')==0)
+						cels[0][l][c]=false;
+					else
+						cels[0][l][c]=true;
+				}
+			}
+			int maxBlob=getBlobSize(0,0);
+			for(int l=0; l<L; l++)
+				for(int now, c=0; c<C; c++){
+					if(cels[1][l][c]==true)
+						continue;
+					else if((now=getBlobSize(l,c))>maxBlob)
+						maxBlob=now;
+				}
+			System.out.println(maxBlob);
+		}
+	}
+}
+import java.util.Scanner;
+
+public class D27{
+	static int V;
+	static boolean adj[][];
+	static boolean visited[];
+	static boolean color[];
+
+	static boolean dfs(int v, boolean red){
+		if(visited[v]){
+			if(color[v]==red)
+				return true;
+			else
+				return false;
+		}
+		//System.out.print(v+1 + " ");
+		visited[v] = true;
+		color[v]=red;
+		boolean res=true;
+		for (int i=0; i<V; i++)
+			if (adj[v][i] && !(res=res && dfs(i, !red)) )
+				return false;
+		return res;
+	}
+
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		int N=in.nextInt();
+		for(int n=0; n<N; n++){
+			V=in.nextInt();
+			int E=in.nextInt();
+			adj = new boolean[V][V];
+			visited = new boolean[V];
+			color = new boolean[V];
+			for (int e=0; e<E; e++) {
+				int a = in.nextInt();
+				int b = in.nextInt();
+				adj[a-1][b-1] = adj[b-1][a-1] = true;
+			}
+			if(dfs(0, true))
+				System.out.println("sim");
+			else
+				System.out.println("nao");
+		}
+	}
+}
+import java.util.Scanner;
+import java.util.Stack;
+import java.util.LinkedList;
+
+public class D29{
+
+	static Boolean[][] graph=new Boolean[26][26];
+	static Boolean[] visited=new Boolean[26];
+	static Stack<Integer> order=new Stack<>();
+
+	static int pos(Character a){
+		return (int)a.charValue()-(int)'A';
+	}
+
+	static void getGraph(String old, String now){
+		Character a, b;
+		for(int i=0; i<old.length(); i++){
+			if((a=old.charAt(i)).equals(b=now.charAt(i)))
+				continue;
+			graph[pos(a)][pos(b)]=true;
+			visited[pos(a)]=false;
+			visited[pos(b)]=false;
+			break;
+		}
+	}
+
+	static void dfsOrder(int i){
+		visited[i]=true;
+		for(int j=0; j<26; j++)
+			if(visited[j]!=null && !visited[j] && graph[i][j]!=null)
+				dfsOrder(j);
+		order.push(i);
+	}
+
+	static void printOrder(){
+		while(!order.isEmpty())
+			System.out.print(Character.valueOf((char)((int)'A'+order.pop().intValue())));
+		System.out.println();
+	}
+
+	static void getOrder(){
+		for(int i=0; i<26; i++)
+			if(visited[i]!=null && !visited[i])
+				dfsOrder(i);
+		printOrder();
+	}
+
+	public static void main(String[] arg){
+		Scanner in=new Scanner(System.in);
+		int N=in.nextInt();
+		String old, now=in.next();
+		for(int n=0; n<N-1; n++){
+			old=now;
+			now=in.next();
+			getGraph(old, now);
+		}
+		getOrder();
+	}
+}
+import java.util.Scanner;
+import java.util.LinkedList;
+import java.util.Queue;
+
+class Node {
+	public LinkedList<Integer> adj;
+
+	Node() {
+		adj = new LinkedList<Integer>();
+	}
+}
+
+class Graph {
+	int size;
+	Node nodes[];
+	int diameter;
+	int raio;
+	LinkedList<Integer> centralNodes;
+	LinkedList<Integer> perifNodes;
+
+	Graph(int n){
+		this.size = n;
+		nodes  = new Node[size]; //each nodes[i] non-initialized is null
+		diameter=0;
+		raio=0;
+		centralNodes=new LinkedList<Integer>();
+		perifNodes=new LinkedList<Integer>();
+	}
+
+	public void addLink(int a, int b){
+		if(nodes[a]==null)
+			nodes[a]=new Node();
+		if(nodes[b]==null)
+			nodes[b]=new Node();
+		nodes[a].adj.add(b);
+		nodes[b].adj.add(a);
+	}
+
+	public int[] distancesBFS(int base) {
+		int[] distance=new int[size];
+		boolean[] visited=new boolean[size];
+		Queue<Integer> q = new LinkedList<Integer>();
+
+		q.add(base);
+		visited[base] = true;
+		distance[base] = 0;
+
+		while (q.size() > 0) {
+			int u = q.remove();
+			for (int w : nodes[u].adj)
+			if (!visited[w]) {
+				q.add(w);
+				visited[w]  = true;
+				distance[w] = distance[u] + 1;
+			}
+		}
+		return distance;
+	}
+
+	public void fillExcentMatrix(){
+		for(int i=0; i<size; i++){
+			excentMatrix[i]=g.distancesBFS(i);
+			if((now=getMax(excentMatrix[i]))>max)
+	}
+}
+
+public class D30 {
+	public static void main(String args[]) {
+		Scanner in = new Scanner(System.in);
+		Graph g = new Graph(in.nextInt());
+		int   e = in.nextInt();
+		for (int i=0; i<e; i++)
+			g.addLink(in.nextInt()-1, in.nextInt()-1);
+	}
+}
