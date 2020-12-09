@@ -53,17 +53,12 @@ class CloudMap{
 	public void fillDistances(){
 		minDistances = new TreeSet<>();
 		count = new Integer[rows][cols];
-//		Iterator<Pair<Integer, Integer>> ashes = queue.iterator(); // WHY WONT THIS FUCKING WOOORRKKKKKKKKK
-		LinkedList<Pair<Integer, Integer>> ashes = new LinkedList<>();
+		Iterator<Pair<Integer, Integer>> ashes = queue.iterator();
 		Pair<Integer, Integer> now;
-		while((now=queue.poll())!=null){
+		while(ashes.hasNext()){
+			now=ashes.next();
 			count[now.x][now.y]=0;
-			ashes.add(now);
 		}
-		queue = ashes;
-					// UGLY WORKAROUD bc Iterator wouldnt fucking work
-//		for(now=ashes.next(); ashes.hasNext(); now=ashes.next())
-//			count[now.x][now.y]=0;
 		while((now=queue.poll())!=null){
 			if(Character.compare(map[now.x].charAt(now.y), 'A')==0)
 				minDistances.add(count[now.x][now.y]);
