@@ -2,101 +2,101 @@ import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
-class Edge {
-	int to;
-	int weight;
+class Pair< X extends Comparable<? super X>, Y extends Comparable<? super Y>> implements Comparable<Pair<X, Y>>{
+	X x;
+	Y y;
+	
+	Pair(X x, Y y){
+		this.x =x;
+		this.y =y;
+	}
 
-	Edge(int t, int w) {
-	to = t;
-	weight = w;
+	public int compareTo(Pair<X, Y> that){
+		int res;
+		if((res=this.x.compareTo(that.x))!=0)
+			return res;
+		return this.y.compareTo(that.y);
 	}
 }
 
 class Node {
-	public LinkedList<Edge> adj;
-	public boolean visited;
-	public int distance;
+	public LinkedList<Pair<Integer, Integer>> adjList;
 
 	Node() {
-	adj = new LinkedList<>();
-	}
-}
-
-class NodeQ implements Comparable<NodeQ> {
-	public int cost;
-	public int node;
-
-	NodeQ(int c, int n) {
-	cost = c;
-	node = n;
-	}
-
-	@Override
-	public int compareTo(NodeQ nq) {
-		if (cost < nq.cost) return -1;
-		if (cost > nq.cost) return +1;
-	if (node < nq.node) return -1;
-	if (node > nq.node) return +1;
-		return 0;
+	adjList = new LinkedList<>();
 	}
 }
 
 class Graph {
-	int n;
+	int size;
 	Node[] nodes;
 
-	Graph(int n) {
-	this.n = n;
-	nodes = new Node[n+1];
-	for (int i=1; i<=n; i++)
-		nodes[i] = new Node();
+	Graph(int size) {
+		this.size = size;
+		nodes = new Node[size];
+		for (int i=0; i<size; i++)
+			nodes[i] = new Node();
 	}
 
-	void addLink(int a, int b, int c) {
-	nodes[a].adj.add(new Edge(b, c));
+	void addLink(int from, int to, int cost) {
+		nodes[from].adjList.add(new Pair<Integer, Integer>(to, cost));
 	}
 
-	void dijkstra(int s) {
-
-	for (int i=1; i<=n; i++) {
-		nodes[i].distance = Integer.MAX_VALUE;
-		nodes[i].visited  = false;
+	int compareInteger(Integer now, Integer next){
+		if(next==null || now<next)
+			return -1;
+		if(now>next)
+			return 1;
+		return 0;
 	}
 
-	nodes[s].distance = 0;
-	TreeSet<NodeQ> q = new TreeSet<>();
-	q.add(new NodeQ(0, s));
+	void dijkstra(int base) {
+		Integer[] distance=new Integer[size];
+		boolean[] visited=new boolean[size];
 
-	while (!q.isEmpty()) {
+//		for (int i=0; i<size; i++) {
+//			distance[i] = Integer.MAX_VALUE;
+//			visited[i] = false;
+//		}
 
-		NodeQ nq = q.pollFirst();
-		int  u = nq.node;
-		nodes[u].visited = true;
-		System.out.println(u + " [dist=" + nodes[u].distance + "]");
+		distance[base] = 0;
+		TreeSet<Pair<Integer, Integer>> queue = new TreeSet<>();	//Tree with list of Pair< Cost, Node >
+		queue.add(new Pair<Integer, Integer>(0, base));
 
-		for (Edge e : nodes[u].adj) {
-		int v = e.to;
-		int cost = e.weight;
-		if (!nodes[v].visited && nodes[u].distance + cost < nodes[v].distance) {
-			q.remove(new NodeQ(nodes[v].distance, v));
-			nodes[v].distance = nodes[u].distance + cost;
-			q.add(new NodeQ(nodes[v].distance, v));
+		while (!queue.isEmpty()) {
+
+			Pair<Integer, Integer> nodeQ = queue.pollFirst();
+			int now = nodeQ.y;	//y is the node
+			visited[now] = true;
+			System.out.println(now+1 + " [dist=" + distance[now] + "]");
+
+			for (Pair<Integer, Integer> n : nodes[now].adjList) {
+				int next = n.x;
+				int cost = n.y;
+				if(distance[next]==null){
+					distance[next] = distance[now] + cost;
+					queue.add(new Pair<Integer, Integer>(distance[next], next));
+					continue;
+				}else if (!visited[next] && compareInteger(distance[now]+cost, distance[next])<0) {
+					queue.remove(new Pair<Integer, Integer>(distance[next], next));
+					distance[next] = distance[now] + cost;
+					queue.add(new Pair<Integer, Integer>(distance[next], next));
+				}
+			}
 		}
-		}
-	}
 	}
 }
 
 
 public class D33 {
 	public static void main(String args[]) {
-	Scanner in = new Scanner(System.in);
+		Scanner in = new Scanner(System.in);
 
-	Graph g = new Graph(in.nextInt());
-	int   e = in.nextInt();
-	for (int i=0; i<e; i++)
-		g.addLink(in.nextInt(), in.nextInt(), in.nextInt());
+		Graph g = new Graph(in.nextInt());
+		int   e = in.nextInt();
+		for (int i=0; i<e; i++)
+			g.addLink(in.nextInt()-1, in.nextInt()-1, in.nextInt());
 
-	g.dijkstra(1);
+		g.dijkstra(1);
 	}
 }
