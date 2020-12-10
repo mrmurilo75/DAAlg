@@ -1,11 +1,12 @@
 import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.TreeSet;
+import java.util.TreeMap;
 
 class Pair< X extends Comparable<? super X>, Y extends Comparable<? super Y>> implements Comparable<Pair<X, Y>>{
 	X x;
 	Y y;
-	
+
 	Pair(X x, Y y){
 		this.x =x;
 		this.y =y;
@@ -20,7 +21,7 @@ class Pair< X extends Comparable<? super X>, Y extends Comparable<? super Y>> im
 }
 
 class Node {
-	public LinkedList<Pair<Integer, Integer>> adjList;
+	public LinkedList<Pair<Integer, Float>> adjList;
 
 	Node() {
 	adjList = new LinkedList<>();
@@ -38,11 +39,12 @@ class Graph {
 			nodes[i] = new Node();
 	}
 
-	void addLink(int from, int to, int cost) {
-		nodes[from].adjList.add(new Pair<Integer, Integer>(to, cost));
+	void addLink(int from, int to, float cost) {
+		nodes[from].adjList.add(new Pair<Integer, Float>(to, cost));
+		nodes[to].adjList.add(new Pair<Integer, Float>(from, cost));
 	}
 
-	int compareInteger(Integer now, Integer next){
+	int compareFloat(Float now, Float next){
 		if(next==null || now<next)
 			return -1;
 		if(now>next)
@@ -50,40 +52,42 @@ class Graph {
 		return 0;
 	}
 
-	void dijkstra(int base) {
-		Integer[] distance=new Integer[size];
+//	TreeMap<Integer, Float> dijkstra(int base) {
+	Float dijkstra(int base) {
+		Float[] distance=new Float[size];
 		boolean[] visited=new boolean[size];
+//		TreeMap<Integer, Float> results = new TreeMap<>();
 
-//		for (int i=0; i<size; i++) {
-//			distance[i] = Integer.MAX_VALUE;
-//			visited[i] = false;
-//		}
-
-		distance[base] = 0;
-		TreeSet<Pair<Integer, Integer>> queue = new TreeSet<>();	//Tree with list of Pair< Cost, Node >
-		queue.add(new Pair<Integer, Integer>(0, base));
+		distance[base] = (float)0;
+		TreeSet<Pair<Float, Integer>> queue = new TreeSet<>();	//Tree with list of Pair< Cost, Node >
+		queue.add(new Pair<Float, Integer>((float)0, base));
 
 		while (!queue.isEmpty()) {
 
-			Pair<Integer, Integer> nodeQ = queue.pollFirst();
+			Pair<Float, Integer> nodeQ = queue.pollFirst();
 			int now = nodeQ.y;	//y is the node
 			visited[now] = true;
-			System.out.println(now+1 + " [dist=" + distance[now] + "]");
 
-			for (Pair<Integer, Integer> n : nodes[now].adjList) {
-				int next = n.x;
-				int cost = n.y;
+			if(now==1)
+				return distance[now];
+//			results.put(now, distance[now]);
+
+			for (Pair<Integer, Float> n : nodes[now].adjList) {
+				Integer next = n.x;
+				Float cost = n.y;
 				if(distance[next]==null){
 					distance[next] = distance[now] + cost;
-					queue.add(new Pair<Integer, Integer>(distance[next], next));
+					queue.add(new Pair<Float, Integer>(distance[next], next));
 					continue;
-				}else if (!visited[next] && compareInteger(distance[now]+cost, distance[next])<0) {
-					queue.remove(new Pair<Integer, Integer>(distance[next], next));
+				}else if (!visited[next] && compareFloat(distance[now]+cost, distance[next])<0) {
+					queue.remove(new Pair<Float, Integer>(distance[next], next));
 					distance[next] = distance[now] + cost;
-					queue.add(new Pair<Integer, Integer>(distance[next], next));
+					queue.add(new Pair<Float, Integer>(distance[next], next));
 				}
 			}
 		}
+		return (float)0;
+//		return results;
 	}
 }
 
@@ -92,11 +96,32 @@ public class D33 {
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);
 
-		Graph g = new Graph(in.nextInt());
-		int   e = in.nextInt();
-		for (int i=0; i<e; i++)
-			g.addLink(in.nextInt()-1, in.nextInt()-1, in.nextInt());
+		int size = in.nextInt();
+		Graph g = new Graph(size);
+		int e = in.nextInt();
+		TreeMap<String, Integer> tree = new TreeMap<>();
+		int trad=0;
+		tree.put(in.next(), trad++);
+		tree.put(in.next(), trad++);
+		for (int i=0; i<e; i++){
+			Integer posFrom, posTo;
+			String from = in.next();
+			String to = in.next();
+			if((posFrom=tree.get(from))==null){
+				posFrom=trad;
+				tree.put(from, posFrom);
+				trad++;
+			}
+			if((posTo=tree.get(to))==null){
+				posTo=trad;
+				tree.put(to, posTo);
+				trad++;
+			}
+			g.addLink(posFrom, posTo, in.nextFloat());
+		}
 
-		g.dijkstra(1);
+//		TreeMap<Integer, Float> results = g.dijkstra(0);
+//		System.out.println(results.get(1));
+		System.out.printf("%.1f\n", g.dijkstra(0));
 	}
 }
