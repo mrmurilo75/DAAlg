@@ -60,10 +60,10 @@ class Graph {
 			nodes[i] = new Node(in.nextInt(), in.nextInt(), i);
 			unused.add(nodes[i]);
 		}
-		System.out.println(Arrays.toString(nodes));
-		for(Node a : unused)
-			System.out.print(a+", ");
-		System.out.println();
+//		System.out.println(Arrays.toString(nodes));
+//		for(Node a : unused)
+//			System.out.print(a+", ");
+//		System.out.println();
 	}
 
 	void printPrim(Integer inicial){
@@ -77,17 +77,21 @@ class Graph {
 				double dist;
 				Node next=nodes[i];
 				if(unused.contains(next) && (dist=now.getDistance(next))<next.distance){
-					System.out.println("now="+now.index+"\tnext="+next.index+"\tdist="+dist);
+//					System.out.println("now="+now.index+"\tnext="+next.index+"\tdist="+dist);
 					next.parent =now;
+					unused.remove(next);	//Indirect help from ANA MENDEZ on debug (forgot to remove the f***er after setting its parents)
 					next.distance =dist;
 					unused.remove(next);
 					unused.add(next);
 				}
+//				for(Node a : unused)
+//					System.out.print(a+", ");
+//				System.out.println();
 			}
 		}
 		double sum=0;
 		for(int i=0; i<size; i++){
-			System.out.println(i+"\t"+nodes[i].distance+"\t"+nodes[i].parent);
+//			System.out.println(i+"\t"+nodes[i].distance+"\t"+nodes[i].parent);
 			sum+=nodes[i].distance;
 		}
 		System.out.println(sum);
