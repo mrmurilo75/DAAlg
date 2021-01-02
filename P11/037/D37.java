@@ -78,10 +78,9 @@ class Graph {
 				Node next=nodes[i];
 				if(unused.contains(next) && (dist=now.getDistance(next))<next.distance){
 //					System.out.println("now="+now.index+"\tnext="+next.index+"\tdist="+dist);
+					unused.remove(next);	//Indirect help from ANA MENDEZ on debug
 					next.parent =now;
-					unused.remove(next);	//Indirect help from ANA MENDEZ on debug (forgot to remove the f***er after setting its parents)
 					next.distance =dist;
-					unused.remove(next);
 					unused.add(next);
 				}
 //				for(Node a : unused)

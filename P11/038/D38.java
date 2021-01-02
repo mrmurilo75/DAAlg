@@ -27,7 +27,7 @@ class Pair< X extends Comparable<? super X>, Y extends Comparable<? super Y>> im
 
 class Node implements Comparable<Node>{
 	public TreeSet< Pair<Node, Integer> > adjList;
-	int index, distance, pathDistance;
+	Integer index, distance, pathDistance;
 	Node parent;
 
 	Node(int index){
@@ -41,11 +41,9 @@ class Node implements Comparable<Node>{
 	}
 
 	public int compareTo(Node that){
-		if(this.distance==that.distance)
-			return (this.index==that.index)? 0 : -1;
-		if(this.distance<that.distance)
-			return -1;
-		return 1;
+		if(this.distance.equals(that.distance))
+			return this.index.compareTo(that.index);
+		return this.distance.compareTo(that.distance);
 	}
 
 	public String toString(){
@@ -72,6 +70,8 @@ class Graph {
 			}
 			unused.add(nodes[i]);
 		}
+//		for(Node pp : unused)
+//		System.out.println(pp);
 
 		for(int i=0, a, b, c; i<connects; i++){
 			nodes[(a=in.nextInt()-1)].addLink(nodes[(b=in.nextInt()-1)], (c=in.nextInt()));
@@ -85,10 +85,16 @@ class Graph {
 		unused.add(nodes[inicial]);
 		while(!unused.isEmpty()){
 			Node now=unused.pollFirst();
+//			System.out.println("now="+now);
 			for(Pair<Node, Integer> pp : now.adjList){
 				Node next=pp.x;
 				Integer pathDist=pp.y;
+//				if(unused.contains(next))
+//					System.out.println("\tnext="+next+"\tpathD="+pathDist+"\tnext.dist="+next.distance);
+//				else
+//					System.out.println("\tnext!!="+next+"\tpathD="+pathDist+"\tnext.dist="+next.distance);
 				if(unused.contains(next) && pathDist<next.distance){
+//					System.out.println("\tnow changed");
 					unused.remove(next);
 					next.parent =now;
 					next.distance =pathDist;
